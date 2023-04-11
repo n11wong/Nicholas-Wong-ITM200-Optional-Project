@@ -1,0 +1,84 @@
+import csv
+
+def createFile():
+    try:
+        stats = open('C:/Users/Nick Wong/Downloads/stats.txt', 'x')
+    except:
+        stats = open('C:/Users/Nick Wong/Downloads/stats.txt', 'w')
+
+    stats.write('Number of Total Vehicles Each Year\n')
+    stats.write('Year\tTotal Vehicles\n')
+    stats.write('--------------------\n')
+    return stats
+
+
+def totalVehicles(file):
+    sales = []
+    year = []
+
+    with open('C:/Users/Nick Wong/Downloads/ITM200/data.csv', mode='r') as fileCSV:  # Opening the sample.csv file
+        fCSV = csv.reader(fileCSV)  # Reading the csv file
+
+        for line in fCSV:
+            if line.__contains__("Month"):
+                continue
+            else:
+                count = 1
+                totalSales = 0
+                file.write(str(line[0]))
+                file.write('\t')
+                year.append(str(line[0]))
+                while count <= 12:
+                    totalSales = int(line[count]) + totalSales
+                    count = count + 1
+                sales.append(totalSales)
+                file.write(str(totalSales))
+                file.write('\n')
+        return sales, year
+
+
+def salesEstimate(file):
+    estimatedSale = []
+    month = []
+
+    with open('C:/Users/Nick Wong/Downloads/ITM200/data.csv', mode='r') as fileCSV:  # Opening the sample.csv file
+        fCSV = csv.reader(fileCSV)  # Reading the csv file
+
+        for line in fCSV:
+            if line.__contains__("Month"):
+                continue
+            else:
+                count = 1
+                if line[0] == '2022':
+                    a = 0
+                    while count <= 6:
+                        a = int(line[count]) + a
+                        count = count + 1
+                elif line[0] == '2021':
+                    b = 0
+                    while count <= 12:
+                        if count <= 6:
+                            b = int(line[count]) + b
+                        elif count >= 7:
+                            month.append(int(line[count]))
+                        count = count + 1
+
+    salesGrowth = (a-b)/b
+    file.write('\nSales Growth rate: ')
+    file.write(str("{:.2f}".format(salesGrowth)))
+    file.write('\n')
+    for x in month:
+        estimate = x + x*salesGrowth
+        estimatedSale.append("{:.0f}".format(estimate))
+    file.write("Estimated Sales for the last six months: ")
+    for x in estimatedSale:
+        file.write(str(x))
+        file.write(' , ')
+    file.write('\n')
+    file.close()
+    return estimatedSale
+
+
+file = createFile()
+sales, year = totalVehicles(file)
+estimatedSale = salesEstimate(file)
